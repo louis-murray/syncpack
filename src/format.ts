@@ -73,9 +73,14 @@ export const run = async (program: CommanderApi) => {
 
   await Promise.all(
     pkgs.map(({ data, path }) => {
-      console.log(chalk.blue(`./${relative('.', path)}`));
       const nextData = sortManifest(shortenBugs(shortenRepository(data)));
-      return writeJson(path, nextData, { spaces: indent });
+      const hasChanged = JSON.stringify(nextData) !== JSON.stringify(data);
+      const shortPath = `./${relative('.', path)}`;
+      if (hasChanged) {
+        console.log(chalk.green(shortPath));
+        return writeJson(path, nextData, { spaces: indent });
+      }
+      console.log(chalk.grey(shortPath));
     })
   );
 };
